@@ -2,10 +2,12 @@ import easygui
 import sqlite3
 import json
 import csv
-# подключение к базе данных SQLite
+
+# Подключение к базе данных SQLite
 def connect_to_sqlite():
     conn = sqlite3.connect('notes_db.sqlite')
     return conn
+
 # Создание таблицы заметок
 def create_notes_table(conn):
     try:
@@ -14,7 +16,8 @@ def create_notes_table(conn):
         conn.commit()
     except Exception as e:
         print(f"Ошибка создания таблицы: {e}")
-# Создание самой заметки
+
+# Создание заметки
 def create_note():
     title = easygui.enterbox("Заголовок заметки:")
     body = easygui.enterbox("Текст заметки:")
@@ -23,6 +26,7 @@ def create_note():
         'body': body
     }
     return note
+
 # Сохранение заметки в базе данных SQLite
 def save_note_to_sqlite(note, conn):
     try:
@@ -31,6 +35,7 @@ def save_note_to_sqlite(note, conn):
         conn.commit()
     except Exception as e:
         print(f"Ошибка сохранения заметки: {e}")
+
 # Отображение списка заметок
 def display_notes(conn):
     try:
@@ -40,9 +45,10 @@ def display_notes(conn):
         for row in result:
             easygui.msgbox(f"Заголовок: {row[1]}\nТекст: {row[2]}")
     except Exception as e:
-        print(f"Ошибка отображения заметок:{e}")
+        print(f"Ошибка отображения заметок: {e}")
+
 # Импорт заметок из CSV файла в базу данных SQLite
-def import_notes_from_csv(file_name, conn):
+def import_notes_from_csv_file(file_name, conn):
     try:
         with open(file_name, "r") as file:
             reader = csv.reader(file, delimiter=';')
@@ -52,8 +58,9 @@ def import_notes_from_csv(file_name, conn):
                 conn.commit()
     except Exception as e:
         print(f"Ошибка импорта из CSV: {e}")
+
 # Импорт заметок из JSON файла в базу данных SQLite
-def import_notes_from_json(file_name, conn):
+def import_notes_from_json_file(file_name, conn):
     try:
         with open(file_name, "r") as file:
             notes = json.load(file)
@@ -61,10 +68,11 @@ def import_notes_from_json(file_name, conn):
             for note in notes:
                 cursor.execute("INSERT INTO notes (title, body) VALUES (?, ?)", (note['title'], note['body']))
             conn.commit()
-        easygui.msgbox(f"{len(notes)} Заметки импортированы из JSON!")
+        easygui.msgbox(f"{len(notes)} заметок импортировано из JSON!")
     except Exception as e:
         print(f"Ошибка импорта из JSON: {e}")
-# Редактирование заметки по ее ID (номер по порядку)
+
+# Редактирование заметки по ее ID
 def edit_note_by_id(note_id, conn):
     note = get_note_by_id(note_id, conn)
     if note is None:
@@ -80,6 +88,7 @@ def edit_note_by_id(note_id, conn):
         easygui.msgbox("Заметка успешно отредактирована!")
     except Exception as e:
         print(f"Ошибка редактирования заметки: {e}")
+
 # Получение заметки по ее ID
 def get_note_by_id(note_id, conn):
     try:
@@ -90,6 +99,7 @@ def get_note_by_id(note_id, conn):
     except Exception as e:
         print(f"Ошибка получения заметки по ID: {e}")
         return None
+
 # Изменение заметки по ее названию
 def edit_note_by_title(note_title, conn):
     try:
@@ -109,27 +119,26 @@ def edit_note_by_title(note_title, conn):
     except Exception as e:
         print(f"Ошибка редактирования заметки: {e}")
 
-def delete_note_by_id(note_id, conn):
+# Функция для удаления всех заметок
+def delete_all_notes(conn):
     try:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+        cursor.execute("DELETE FROM notes")
         conn.commit()
-        cursor.execute("SELECT * FROM notes")
-        display_notes(cursor)
-        cursor.close()
-        easygui.msgbox("Заметка была удалена.")
+        easygui.msgbox("Все заметки успешно удалены!")
     except Exception as e:
-        print(f"Ошибка удаления заметки: {e}")
-
+        print(f"Ошибка удаления всех заметок: {e}")
 
 # Подключение к базе данных SQLite
 conn = connect_to_sqlite()
+
 # Создание таблицы заметок
 create_notes_table(conn)
+
 # Основной цикл программы
 while True:
-    choices = ["Создать заметку", "Показать заметки", "Изменить заметку по ID", "Edit Note by Title", "Delete Note", "CSV import", "JSON import", "Exit"]
-    choice = easygui.buttonbox("Select an action:", choices=choices)
+    choices = ["Создать заметку", "Показать заметки", "Изменить заметку", "Удалить заметки", "Импорт из CSV", "Импорт из JSON", "Выход"]
+    choice = easygui.buttonbox("Выберите действие:", choices=choices)
     if choice == "Создать заметку":
         note = create_note()
         save_note_to_sqlite(note, conn)
@@ -138,18 +147,19 @@ while True:
     elif choice == "Изменить заметку по ID":
         note_id = easygui.enterbox("Введите ID заметки для редактирования:")
         edit_note_by_id(note_id, conn)
-    elif choice == "Edit Note by Title":
+    elif choice == "Изменить заметку по названию":
         note_title = easygui.enterbox("Введите название заметки для редактирования:")
         edit_note_by_title(note_title, conn)
-    elif choice == "Delete Note":
-        note_id = easygui.enterbox("Введите ID заметки для удаления:")
-        delete_note_by_id(note_id, conn)
-    elif choice == "CSV import":
-        file_name = easygui.fileopenbox("Select a CSV file to import:")
-        import_notes_from_csv(file_name, conn)
-    elif choice == "JSON import":
-        file_name = easygui.fileopenbox("Select a JSON file to import:")
-        import_notes_from_json(file_name, conn)
-    elif choice == "Exit":
+    elif choice == "Удалить заметки":
+        confirm = easygui.boolbox("Вы уверены, что хотите удалить все заметки?", "Подтверждение")
+        if confirm:
+            delete_all_notes(conn)
+    elif choice == "Импорт из CSV":
+        file_name = easygui.fileopenbox("Выберите CSV файл для импорта:")
+        import_notes_from_csv_file(file_name, conn)
+    elif choice == "Импорт из JSON":
+        file_name = easygui.fileopenbox("Выберите JSON файл для импорта:")
+        import_notes_from_json_file(file_name, conn)
+    elif choice == "Выход":
         conn.close()
         break
