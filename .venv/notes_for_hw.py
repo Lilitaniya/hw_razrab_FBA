@@ -23,8 +23,7 @@ def create_note():
         'body': body
     }
     return note
-
-# Функция для сохранения заметки в базе данных SQLite
+# Сохранение заметки в базе данных SQLite
 def save_note_to_sqlite(note, conn):
     try:
         cursor = conn.cursor()
@@ -32,8 +31,7 @@ def save_note_to_sqlite(note, conn):
         conn.commit()
     except Exception as e:
         print(f"Ошибка сохранения заметки: {e}")
-
-# Функция для отображения списка заметок
+# Отображение списка заметок
 def display_notes(conn):
     try:
         cursor = conn.cursor()
@@ -43,8 +41,7 @@ def display_notes(conn):
             easygui.msgbox(f"Заголовок: {row[1]}\nТекст: {row[2]}")
     except Exception as e:
         print(f"Ошибка отображения заметок:{e}")
-
-# Функция для импорта заметок из CSV файла в базу данных SQLite
+# Импорт заметок из CSV файла в базу данных SQLite
 def import_notes_from_csv(file_name, conn):
     try:
         with open(file_name, "r") as file:
@@ -55,8 +52,7 @@ def import_notes_from_csv(file_name, conn):
                 conn.commit()
     except Exception as e:
         print(f"Ошибка импорта из CSV: {e}")
-
-# Функция для импорта заметок из JSON файла в базу данных SQLite
+# Импорт заметок из JSON файла в базу данных SQLite
 def import_notes_from_json(file_name, conn):
     try:
         with open(file_name, "r") as file:
@@ -68,8 +64,7 @@ def import_notes_from_json(file_name, conn):
         easygui.msgbox(f"{len(notes)} Заметки импортированы из JSON!")
     except Exception as e:
         print(f"Ошибка импорта из JSON: {e}")
-
-# Функция для редактирования заметки по ее ID
+# Редактирование заметки по ее ID (номер по порядку)
 def edit_note_by_id(note_id, conn):
     note = get_note_by_id(note_id, conn)
     if note is None:
@@ -85,8 +80,7 @@ def edit_note_by_id(note_id, conn):
         easygui.msgbox("Заметка успешно отредактирована!")
     except Exception as e:
         print(f"Ошибка редактирования заметки: {e}")
-
-# Функция для получения заметки по ее ID
+# Получение заметки по ее ID
 def get_note_by_id(note_id, conn):
     try:
         cursor = conn.cursor()
@@ -96,8 +90,7 @@ def get_note_by_id(note_id, conn):
     except Exception as e:
         print(f"Ошибка получения заметки по ID: {e}")
         return None
-
-# Функция для редактирования заметки по ее названию
+# Изменение заметки по ее названию
 def edit_note_by_title(note_title, conn):
     try:
         cursor = conn.cursor()
@@ -106,7 +99,6 @@ def edit_note_by_title(note_title, conn):
         if result is None:
             easygui.msgbox("Заметка с таким названием не найдена!")
             return
-
         note_id = result[0]
         new_title = easygui.enterbox("Новый заголовок заметки:", default=result[1])
         new_body = easygui.enterbox("Новый текст заметки:", default=result[2])
@@ -126,13 +118,10 @@ def delete_note_by_id(note_id, conn):
     except Exception as e:
         print(f"Ошибка удаления заметки: {e}")
 
-
 # Подключение к базе данных SQLite
 conn = connect_to_sqlite()
-
 # Создание таблицы заметок
 create_notes_table(conn)
-
 # Основной цикл программы
 while True:
     choices = ["Create Note", "Display Notes", "Edit Note by ID", "Edit Note by Title", "Delete Note", "CSV import", "JSON import", "Exit"]
