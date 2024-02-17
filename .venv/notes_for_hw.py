@@ -124,15 +124,14 @@ conn = connect_to_sqlite()
 create_notes_table(conn)
 # Основной цикл программы
 while True:
-    choices = ["Create Note", "Display Notes", "Edit Note by ID", "Edit Note by Title", "Delete Note", "CSV import", "JSON import", "Exit"]
+    choices = ["Создать заметку", "Показать заметки", "Изменить заметку по ID", "Edit Note by Title", "Delete Note", "CSV import", "JSON import", "Exit"]
     choice = easygui.buttonbox("Select an action:", choices=choices)
-
-    if choice == "Create Note":
+    if choice == "Создать заметку":
         note = create_note()
         save_note_to_sqlite(note, conn)
-    elif choice == "Display Notes":
+    elif choice == "Показать заметки":
         display_notes(conn)
-    elif choice == "Edit Note by ID":
+    elif choice == "Изменить заметку по ID":
         note_id = easygui.enterbox("Введите ID заметки для редактирования:")
         edit_note_by_id(note_id, conn)
     elif choice == "Edit Note by Title":
