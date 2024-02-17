@@ -114,9 +114,13 @@ def delete_note_by_id(note_id, conn):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM notes WHERE id = ?", (note_id,))
         conn.commit()
-        easygui.msgbox("Заметка успешно удалена!")
+        cursor.execute("SELECT * FROM notes")
+        display_notes(cursor)
+        cursor.close()
+        easygui.msgbox("Заметка была удалена.")
     except Exception as e:
         print(f"Ошибка удаления заметки: {e}")
+
 
 # Подключение к базе данных SQLite
 conn = connect_to_sqlite()
