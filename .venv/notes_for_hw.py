@@ -2,13 +2,11 @@ import easygui
 import sqlite3
 import json
 import csv
-
-# Функция для подключения к базе данных SQLite
+# подключение к базе данных SQLite
 def connect_to_sqlite():
     conn = sqlite3.connect('notes_db.sqlite')
     return conn
-
-# Функция для создания таблицы заметок
+# Создание таблицы заметок
 def create_notes_table(conn):
     try:
         cursor = conn.cursor()
@@ -16,8 +14,7 @@ def create_notes_table(conn):
         conn.commit()
     except Exception as e:
         print(f"Ошибка создания таблицы: {e}")
-
-# Функция для создания заметки
+# Создание самой заметки
 def create_note():
     title = easygui.enterbox("Заголовок заметки:")
     body = easygui.enterbox("Текст заметки:")
