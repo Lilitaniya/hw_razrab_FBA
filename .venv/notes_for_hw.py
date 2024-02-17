@@ -59,18 +59,26 @@ def import_notes_from_csv_file(file_name, conn):
     except Exception as e:
         print(f"Ошибка импорта из CSV: {e}")
 
-# Импорт заметок из JSON файла в базу данных SQLite
-def import_notes_from_json_file(file_name, conn):
+# Функция для импорта заметок из файла JSON
+def import_notes_from_json(file_path, conn):
     try:
-        with open(file_name, "r") as file:
-            notes = json.load(file)
-            cursor = conn.cursor()
-            for note in notes:
-                cursor.execute("INSERT INTO notes (title, body) VALUES (?, ?)", (note['title'], note['body']))
-            conn.commit()
-        easygui.msgbox(f"{len(notes)} заметок импортировано из JSON!")
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            if isinstance(data, dict):
+                cursor = conn.cursor()
+                for note in data.get('notes', []):
+                    cursor.execute("INSERT INTO notes (title, content) VALUES (?, ?)", (note.get('title'), note.get('content')))
+                conn.commit()
+                easygui.msgbox("Заметки успешно импортированы из файла JSON!")
+            else:
+                easygui.msgbox("Файл JSON содержит некорректные данные.")
+    except json.JSONDecodeError as e:
+        print(f"Ошибка импорта из JSON: {e}")
+        easygui.msgbox("Ошибка импорта из JSON. Проверьте формат файла.")
     except Exception as e:
         print(f"Ошибка импорта из JSON: {e}")
+        easygui.msgbox("Произошла ошибка при импорте из JSON.")
+
 
 # Редактирование заметки по ее ID
 def edit_note_by_id(note_id, conn):
@@ -159,7 +167,7 @@ while True:
         import_notes_from_csv_file(file_name, conn)
     elif choice == "Импорт из JSON":
         file_name = easygui.fileopenbox("Выберите JSON файл для импорта:")
-        import_notes_from_json_file(file_name, conn)
+        import_notes_from_json(file_name, conn)
     elif choice == "Выход":
         conn.close()
         break
