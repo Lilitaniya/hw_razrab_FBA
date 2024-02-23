@@ -80,7 +80,7 @@ def import_notes_from_json(file_path, conn):
         easygui.msgbox("Произошла ошибка при импорте из JSON.")
 
 
-# Редактирование заметки по ее ID
+# Редактирование заметки по ее ID (сделала на всякий случай, оставлю тут на будущее)
 def edit_note_by_id(note_id, conn):
     note = get_note_by_id(note_id, conn)
     if note is None:
