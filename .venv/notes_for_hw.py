@@ -152,9 +152,9 @@ while True:
         save_note_to_sqlite(note, conn)
     elif choice == "Показать заметки":
         display_notes(conn)
-    elif choice == "Изменить заметку по ID":
-        note_id = easygui.enterbox("Введите ID заметки для редактирования:")
-        edit_note_by_id(note_id, conn)
+   # Тоже на всякий оставлю, вдруг надо будет на айди переделывать elif choice == "Изменить заметку по ID":
+   #     note_id = easygui.enterbox("Введите ID заметки для редактирования:")
+   #     edit_note_by_id(note_id, conn)
     elif choice == "Изменить заметку по названию":
         note_title = easygui.enterbox("Введите название заметки для редактирования:")
         edit_note_by_title(note_title, conn)
